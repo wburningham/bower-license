@@ -1,7 +1,23 @@
 #!/usr/bin/env node
 
+'use strict';
 var checker = require('../lib/index');
+var mkdirp = require('mkdirp');
+var path = require('path');
+var fs = require('fs');
 
-checker.init({}, function(json){
-    checker.print(json);
+
+checker.init({}, function(json) {
+	var csvIndex = process.argv.indexOf('--csv');
+	if (csvIndex !== -1 && process.argv.length > csvIndex + 1) {
+		var csv = process.argv[csvIndex+1];
+		var dir = path.dirname(csv);
+		mkdirp.sync(dir);
+		fs.writeFileSync(csv, checker.asCSV(json), 'utf8');
+		console.log('file written', csv);
+
+	} else {
+		checker.print(json);
+
+	}
 });
